@@ -1,32 +1,28 @@
 package com.github.vshtishi;
 
+import java.util.Arrays;
+
 public class Application {
 	
-	
-    public static void main(String[] args){
-    	Person employee=new Employee();
-    	Employee employee2=null;
-    	Person person=new Employee();
-    	//The instanceof operator
-    	boolean b1=employee instanceof Employee;
-    	boolean b2=employee instanceof Person;
-    	boolean b3=employee instanceof Object;
-    	boolean b4=employee2 instanceof Employee;
+	public static void main(String[] args){
+		StudentBuilder studentBuilder=new StudentBuilder();
+    	studentBuilder
+    	      .setName("Ann")
+    	      .setStudentId(001)
+    	      .setGrades(Arrays.asList(8,9,10));
     	
-    	System.out.println("instanceof returns "+b1+" because employee is an instance of Employee.");
-    	System.out.println("instanceof returns "+b2+" because employee is an instance of its superclass, Person.");
-    	System.out.println("instanceof returns "+b3+" because all Java classes inherit from Object");
-    	System.out.println("instanceof returns "+b4+" because employee2 points to null.");
+    	Student student1=studentBuilder.build();
+    	System.out.println(student1);
     	
-    	//Determining if an instance is a subclass of a particular object before applying an explicit cast
-    	if(person instanceof Employee){
-    	   employee2=(Employee)person;
-    	}
-    	System.out.println(employee2); 
+    	Student student2=new StudentBuilder()
+    	      .setName("John")
+      	      .setStudentId(002)
+      	      .setGrades(Arrays.asList(9,10,10))
+      	      .build();
     	
-        Person p1=new Person("Ann",001);
-        Person p2=new Person("John",002);
-        System.out.println(p1);
-        System.out.println(p1.equals(p2));
+    	System.out.println(student2);
+    	
+    	final Card card=CardFactory.getCard("student");
+    	System.out.println(card);
     }
 }
