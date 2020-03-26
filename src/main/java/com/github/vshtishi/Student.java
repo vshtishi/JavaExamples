@@ -8,6 +8,8 @@ public final class Student {
       private final List<Integer> grades;
       
       public Student(String name, int student_id, List<Integer> grades){
+    	  if(name==null || name.trim().length()==0)
+     		 throw new IllegalArgumentException("Name is required");
     	  this.name=name;
     	  this.student_id=student_id;
     	  if(grades==null)

@@ -1,12 +1,14 @@
 package com.github.vshtishi;
 
-public class Person {
+public class Person implements Comparable<Person> {
      private String name;
      private int id;
      public Person(){
     	 
      }
      public Person(String name, int id){
+    	 if(name==null || name.trim().length()==0)
+    		 throw new IllegalArgumentException("Name is required");
     	 this.name=name;
     	 this.id=id;
      }
@@ -14,7 +16,7 @@ public class Person {
      public String getName(){
     	 return name;
      }
-     public void setName(String Name){
+     public void setName(String name){
     	 if(name==null || name.trim().length()==0){
     		 throw new IllegalArgumentException("Name is required");
     	 }
@@ -37,7 +39,7 @@ public class Person {
      public String toString(){
     	 return "Name: "+name;
      }
-     
+     //The compareTo() and equals() methods should be consistent
      @Override
      public boolean equals(Object obj){
     	 if(obj==this)
@@ -46,6 +48,13 @@ public class Person {
     		 return false;
     	 Person otherPerson=(Person)obj;
     	 return this.id==otherPerson.id;
+     }
+     /*The compareTo() method must return:
+      * 0 when the current object is equal to the argument
+      * a nr less than zero when the current object is smaller than the argument
+      * a nr greater than zero when the current object is larger than the argument */
+     public int compareTo(Person person){
+    	 return id-person.id;
      }
      
 }
