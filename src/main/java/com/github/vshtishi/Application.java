@@ -1,86 +1,63 @@
 package com.github.vshtishi;
+
 import java.util.*;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
+import java.util.stream.DoubleStream;
+import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 public class Application {
-	//Returning an Optional
-     public static Optional<Double> average(int... scores){
-    	 if(scores.length==0)
-    		 return Optional.empty();
-    	 int sum=0;
-    	 for(int score: scores)
-    		 sum += score;
-    	 return Optional.of((double)sum/scores.length);
-    	     
-     }
-	public static void main(String[] args){
-		//An Optional can be empty or contain a value
-		System.out.println(average(95,100));
-		System.out.println(average());
+
+	public static void main(String[] args) {
+
+		Person person1 = new Person("Ann", 101);
+		Person person2 = new Person("Jane", 232);
+		Person person3 = new Person("John", 103);
+		Person person4 = new Person("Harry", 101);
+		List<Person> list = new ArrayList<>();
+		list.add(person1);
+		list.add(person2);
+		list.add(person3);
+		list.add(person4);
+		// Using common intermediate operations in streams
+		System.out.println("Filtering a stream: ");
+		list.stream().filter(x -> x.getName().startsWith("J")).forEach(System.out::println);
+		System.out.println("Removing duplicate values from the stream: ");
+		list.stream().distinct().forEach(System.out::println);
+		System.out.println("Making a stream smaller");
+		list.stream().skip(1).limit(2).forEach(System.out::println);
+		System.out.println("Mapping the elements of the stream: ");
+		list.stream().map(s -> s.getName().charAt(0)).forEach(System.out::println);
+		System.out.println("Sorted stream: ");
+		list.stream().sorted().forEach(System.out::println);
+		System.out.println("Sorted using Comparator: ");
+		list.stream().sorted((s, t) -> (s.getName()).compareTo(t.getName())).forEach(System.out::println);
+
+		// Creating primitive streams
+		DoubleStream stream = DoubleStream.of(1.1, 1.2, 1.3);
+		System.out.print("Generating a range: ");
+		IntStream range = IntStream.range(1, 6);
+		range.forEach(System.out::print);
+		System.out.println(" ");
+		System.out.print("Generating a closed range: ");
+		IntStream rangeClosed = IntStream.rangeClosed(1, 5);
+		rangeClosed.forEach(System.out::print);
+		System.out.println(" ");
+
+		IntStream intStream = list.stream().mapToInt(s -> s.getId());
+		System.out.println("Stream sum: " + intStream.sum());
+
+		// Collecting into Maps
+		Map<String, Integer> map = list.stream().collect(Collectors.toMap(s -> s.getName(), k -> k.getId()));
+		System.out.println(map);
+		// Collecting using Grouping
+		Map<String,List<Person>> map1 = list.stream().collect(Collectors.groupingBy(s -> s.getName().substring(0,1)));
+		System.out.println(map1);
+		// Collecting using Partitioning
+		Map<Boolean, List<Person>> map2 = list.stream().collect(Collectors.partitioningBy(s -> s.getId() <= 103));
+		System.out.println(map2);
 		
-		//Checking if the Optional contains a value
-          Optional<Double> optional=average(50,100);
-          if(optional.isPresent()){
-        	  System.out.println(optional.get());
-          }
-	   
-        //If a value is null, we assign an empty Optional. Otherwise, we wrap the value
-          Double d=null;
-          Optional<Double> opt=Optional.ofNullable(d);
-          System.out.println("Empty optional assigned to a null value: " +opt);
-		
-        //Using Optional instance methods
-          optional.ifPresent(System.out::println); //Prints the value if it is present
-          System.out.println(opt.orElse(Double.NaN)); //Prints NaN if a value is not present
-          System.out.println(opt.orElseGet(()-> 0.0)); //Prints the result returned from Supplier
-          System.out.println(optional.orElseThrow(()-> new IllegalStateException()));  //Gets Supplier to create an Exception that should be thrown
-          
-       //Creating Stream sources
-          Stream<String> empty=Stream.empty(); //Creates an empty stream
-          Stream<Integer> singleElement=Stream.of(1); //Creates a stream with a single element
-          Stream<Integer> fromArray=Stream.of(1,2,3); //Creates a stream with multiple elements
-          //Converting from a list to a stream
-          List<Integer> list= Arrays.asList(1,2,3);
-          Stream<Integer> fromList= list.stream();
-          
-	   //Terminal stream operations	 
-		 System.out.println("The number of elements is: " +fromList.count());
-		 
-		 Stream<String> s1=Stream.of("Ann", "Jane", "Harry");
-		 Optional<String> minimum= s1.min((s,t) -> s.length()-t.length());
-		 System.out.print("The minimum value of the stream is: ");
-		 minimum.ifPresent(System.out::println);
-		 
-		 Stream<String> s2=Stream.of("Ann", "Jane", "Harry");
-		 Optional<String> maximum= s2.max((s,t) -> s.length()-t.length());
-		 System.out.print("The maximum value of the stream is: ");
-		 maximum.ifPresent(System.out::println);
-		 
-	   	 Stream<Double> infinite=Stream.generate(Math::random);
-	   	 infinite.findAny().ifPresent(System.out::println);
-		 fromArray.findFirst().ifPresent(System.out::println);
-		 
-		 List<Integer> list1=Arrays.asList(7,8,9,10);
-		 Predicate<Integer> pred= x -> x>10;
-		 System.out.print("Searching the stream :");
-		 System.out.print(list.stream().anyMatch(pred)+ " "); //There is no match for any element greater than 10 in the stream
-		 System.out.print(list.stream().noneMatch(pred)+ " "); //None of the elements match the condition
-		 pred= x -> x<=10;
-		 System.out.println(list.stream().allMatch(pred)); //All of the elements match the condition
-		 System.out.println("Printing the stream:");
-		 list1.stream().forEach(System.out::println);
-		 
-		 Stream<String> s3=Stream.of("John"," ","Doe");
-		 String fullName=s3.reduce("",String::concat);
-		 System.out.println("(1)Reducing the stream: " + fullName);
-		 
-		 Stream<Integer> s4=Stream.of(3,4,5);
-		 System.out.println("(2)Reducing the stream: " + s4.reduce(1, (a,b) -> a*b));
-		 
-		 Stream<String> s5=Stream.of("s","t","r","e","a","m");
-		 TreeSet<String> set=s5.collect(Collectors.toCollection(TreeSet::new));
-		 System.out.println("Using Collectors: " + set);
-    }
+
+	}
 }
