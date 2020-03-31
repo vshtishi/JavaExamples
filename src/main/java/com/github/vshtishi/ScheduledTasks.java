@@ -7,7 +7,7 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
 public class ScheduledTasks {
-	public static void main(String[] args){
+	public static void main(String[] args) {
 		// Scheduling tasks
 		System.out.println("Scheduled Tasks");
 		ScheduledExecutorService service = Executors.newSingleThreadScheduledExecutor();
@@ -18,6 +18,6 @@ public class ScheduledTasks {
 		Future<?> result1 = service.schedule(task1, 10, TimeUnit.SECONDS);
 		// The second task is scheduled 2 min
 		Future<?> result2 = service.schedule(task2, 1, TimeUnit.MINUTES);
-		
+
 	}
 }

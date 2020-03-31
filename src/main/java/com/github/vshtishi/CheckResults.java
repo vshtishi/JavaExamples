@@ -1,36 +1,36 @@
 package com.github.vshtishi;
 
 import java.util.concurrent.*;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class CheckResults {
-	private static int counter = 0;
+	// Using Atomic Classes to protect data
+	private AtomicInteger counter = new AtomicInteger(0);
 
-	public static void main(String[] args) throws InterruptedException, ExecutionException {
+	private void incrementAndReport() {
+		// counter++ is not a thread safe operation
+		System.out.print(counter.incrementAndGet() + " ");
+	}
+
+	public synchronized void printResults() {
+		// counter++ is not a thread safe operation
+		System.out.print("Result: " + counter.incrementAndGet() + " ");
+	}
+
+	public static void main(String[] args) {
 		ExecutorService service = null;
 		try {
-			service = Executors.newSingleThreadExecutor();
-			Future<?> result = service.submit(() -> {
-				for (int i = 0; i < 500; i++)
-					CheckResults.counter++;
-			});
-			Future<Integer> result2=service.submit(() -> 10+5);
-			System.out.println(result.get(10, TimeUnit.SECONDS));//The get() method returns null because Runnable returns void
-			//Using Callable which supports a return type
-			System.out.println(result2.get());
-		} catch (TimeoutException e) {
-			System.out.println("Not reached in time");
+			service = Executors.newFixedThreadPool(20);
+
+			CheckResults result = new CheckResults();
+			for (int i = 0; i < 10; i++) {
+				// service.submit(() -> result.incrementAndReport());
+				service.submit(() -> result.printResults());
+			}
 		} finally {
 			if (service != null)
 				service.shutdown();
 		}
-		//Awaiting all tasks to finish
-		if(service!=null){
-			service.awaitTermination(1, TimeUnit.SECONDS);
-			//Checking whether all tasks are finished
-			if(service.isTerminated())
-				System.out.println("All tasks finished");
-			else
-				System.out.println("At least one task is still running");
-		}
+
 	}
 }

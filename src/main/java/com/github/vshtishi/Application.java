@@ -1,13 +1,12 @@
 package com.github.vshtishi;
 
 import java.util.*;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.function.Predicate;
-import java.util.stream.Collectors;
-import java.util.stream.DoubleStream;
-import java.util.stream.IntStream;
-import java.util.stream.Stream;
+import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.TimeUnit;
 
 public class Application {
 
@@ -22,19 +21,42 @@ public class Application {
 		list.add(person2);
 		list.add(person3);
 		list.add(person4);
-        //Creating Threads with the ExecutorService
+
 		ExecutorService service = null;
 		try {
-			service = Executors.newSingleThreadExecutor();
-			service.execute(() -> System.out.println("Printing List"));
-			service.execute(() -> {
-				for (Person e : list)
-					System.out.println(e); //The main() method is an independent thread from the Executor service
-			});
-			System.out.println("end");
+			service = Executors.newFixedThreadPool(10);
+			// Obtaining synchronized collections
+			Collections.synchronizedList(list);
+			synchronized (list) {
+				for (Person p : list)
+					service.submit(()->System.out.println(p + " "));
+			}
 		} finally {
 			if (service != null)
 				service.shutdown();
 		}
+
+		// Using concurrent collection classes
+		try {
+			BlockingQueue<Person> blockingQueue = new LinkedBlockingQueue<>();
+			blockingQueue.offer(person1);
+			blockingQueue.offer(person2, 2, TimeUnit.SECONDS);
+			System.out.println(blockingQueue.poll(10, TimeUnit.MILLISECONDS));
+		} catch (InterruptedException e) {
+			// Handle Interruption
+		}
+
+		List<Integer> list1 = new CopyOnWriteArrayList<>(Arrays.asList(4, 3, 52));
+		// The iterator will iterate over the original elements prior to the modifications
+		for (Integer item : list1) {
+			System.out.print(item + " ");
+			list1.add(10);
+		}
+		System.out.println();
+		System.out.println("Size: " + list1.size());
+		System.out.println(list1);
+
+		
+
 	}
 }
