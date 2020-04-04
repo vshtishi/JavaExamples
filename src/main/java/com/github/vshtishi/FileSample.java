@@ -36,7 +36,7 @@ public class FileSample {
 		File source= new File("C:\\Users\\Rando\\Desktop\\test.txt");
 		File destination= new File("C:\\Users\\Rando\\Desktop\\copy.txt");
 		copy1(source,destination);
-		
+		//copy2(source,destination);
 	}
 	
 	
