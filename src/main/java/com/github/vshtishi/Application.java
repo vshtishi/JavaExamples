@@ -1,46 +1,47 @@
 package com.github.vshtishi;
 
-import java.io.*;
-import java.io.File;
-import java.io.FileReader;
 import java.io.IOException;
+import java.net.URI;
+import java.nio.file.FileSystems;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.*;
 
 public class Application {
-	// Serializing and Deserializing objects
-	public static List<Person> getObjects(File data) throws IOException, ClassNotFoundException {
-		List<Person> list = new ArrayList<>();
-		try (ObjectInputStream in = new ObjectInputStream(new BufferedInputStream(new FileInputStream(data)))) {
-			while (true) {
-				Object object = in.readObject();
-				if (object instanceof Person)
-					list.add((Person) object);
-			}
-		} catch (EOFException e) {
-			// File end reached
-		}
-		return list;
-	}
 
-	public static void createObjectsFile(List<Person> list, File data) throws IOException {
-		try (ObjectOutputStream out = new ObjectOutputStream(new BufferedOutputStream(new FileOutputStream(data)))) {
-			for (Person p : list)
-				out.writeObject(p);
+	public static void main(String[] args) {
+		// Creating Paths
+		Path path = Paths.get("C:\\Users\\Rando\\Desktop\\test.txt");
+		Path path1 = FileSystems.getDefault().getPath("test.txt");
+		Path path2 = Paths.get("copy.txt");
+		// Viewing the path
+		for (int i = 0; i < path.getNameCount(); i++) {
+			System.out.println("Element " + i + " is: " + path.getName(i));
 		}
-	}
-
-	public static void main(String[] args) throws IOException, ClassNotFoundException {
-		Person person1 = new Person("Ann", 101);
-		Person person2 = new Person("Jane", 232);
-		Person person3 = new Person("John", 103);
-		Person person4 = new Person("Harry", 101);
-		List<Person> list = new ArrayList<>();
-		list.add(person1);
-		list.add(person2);
-		list.add(person3);
-		list.add(person4);
-		File file = new File("C:\\Users\\Rando\\Desktop\\test.txt");
-		createObjectsFile(list, file);
-		System.out.println(getObjects(file));
+		System.out.println(path1.toString());
+		// Accessing path components
+		System.out.println("Filename is: " + path.getFileName());
+		System.out.println("Root is: " + path.getRoot());
+		System.out.println("Current parent is: " + path.getParent());
+		// Checking Path type
+		System.out.println("Is Path absolute: " + path1.isAbsolute());
+		System.out.println("Absolute path: " + path1.toAbsolutePath());
+		// Creating a new path
+		System.out.println("Subpath from 2 to 3 is: " + path.subpath(2, 3));
+		// Deriving a path
+		System.out.println(path1.relativize(path2));
+		// System.out.println(path2.relativize(path1));
+		// Joining Path objects
+		System.out.println("Joining paths: " + path.resolve(path2));
+		// Cleaning up a path
+		System.out.println("Normalized path: " + path.resolve(path2).normalize());
+		//Checking for File Existence
+		try{
+			System.out.println("Real path: " +path.toRealPath());
+		} catch(IOException e){
+			//Handle I/O Exception
+		}
+		
+		
 	}
 }
